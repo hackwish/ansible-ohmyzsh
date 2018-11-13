@@ -1,0 +1,30 @@
+---
+
+- name: determine if ZSH is installed
+  command: which zsh
+  register: check_zsh_installed
+  ignore_errors: true
+  changed_when: false
+  tags: oh-my-zsh
+
+- name: install or upgrade zsh
+  apt: pkg=zsh,git state=latest
+  when: not check_zsh_installed is success
+  register: zsh_installed
+  tags: oh-my-zsh
+
+- name: install or upgrade oh-my-zsh
+  shell: curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
+  args:
+    warn: false
+  when:  zsh_installed is succeeded or not ohmyzsh_template_copied is success
+  register: ohmyzsh_installed
+  tags: oh-my-zsh
+
+- name: load custom template
+  template:
+    src: zshrc.j2
+    dest: $HOME/.zshrc
+  register: ohmyzsh_template_copied
+  when: ohmyzsh_installed is success
+  tags: oh-my-zsh
