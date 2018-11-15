@@ -11,4 +11,4 @@
   apt: pkg=zsh,git state=latest
   when: not check_zsh_installed is success
   register: zsh_installed
-  tags: oh-my-zsh
+  tags: zsh-install

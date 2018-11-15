@@ -1,15 +1,31 @@
 ---
+#Root or default user
+- name: install or upgrade oh-my-zsh
+  shell: curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
+  args:
+    warn: false
+  when:  zsh_installed is succeeded or not ohmyzsh_template_copied is success
+  register: ohmyzsh_current_installed
+  tags: oh-my-zsh
 
+- name: load custom template
+  template:
+    src: zshrc.j2
+    dest: $HOME/.zshrc
+  register: ohmyzsh_template_copied
+  when: ohmyzsh_installed is success
+  tags: oh-my-zs
+
+#Per existing user
 - name: Installing oh-my-zsh per user
   git:
     repo: https://github.com/robbyrussell/oh-my-zsh.git
     dest: "/home/{{ item.users }}/.oh-my-zsh"
   with_items:
-      - { users: root }
       - { users: vagrant }
       - { users: ubuntu }
   register: ohmyzsh_installed
-  tags: oh-my-zsh
+  tags: oh-my-zsh-installed
 
 - name: Setting permissions per user
   file:
@@ -17,12 +33,11 @@
     owner:  "{{ item.users }}"
     recurse: yes
   with_items:
-      - { users: root }
       - { users: vagrant }
       - { users: ubuntu }
   register: ohmyzsh_permissions
   when: ohmyzsh_installed is success
-  tags: oh-my-zsh
+  tags: oh-my-zsh-permissions
 
 - name: Setting default shell per user
   user:
@@ -33,7 +48,7 @@
       - { users: ubuntu }
   register: ohmyzsh_default
   when: ohmyzsh_permissions is success
-  tags: oh-my-zsh
+  tags: oh-my-zsh-defaults
 
 - name: load custom config zsh on existing users
   template:
@@ -43,9 +58,8 @@
     backup: yes
     mode: "0644"
   with_items:
-      - { users: root }
       - { users: vagrant }
       - { users: ubuntu }
   register: ohmyzsh_template_copied
   when: ohmyzsh_default is success
-  tags: oh-my-zsh
+  tags: oh-my-zsh-config
