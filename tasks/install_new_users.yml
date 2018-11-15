@@ -33,5 +33,5 @@
     backup: yes
     mode: "0644"
   register: ohmyzsh_template_copied
-  when: ohmyzsh_installed is success
+  #when: ohmyzsh_installed is success
   tags: oh-my-zsh
