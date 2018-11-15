@@ -13,8 +13,8 @@
     src: zshrc.j2
     dest: $HOME/.zshrc
   register: ohmyzsh_template_copied
-  when: ohmyzsh_installed is success
-  tags: oh-my-zs
+  when: ohmyzsh_current_installed is success
+  tags: ohmyzsh_current_template
 
 #Per existing user
 - name: Installing oh-my-zsh per user
