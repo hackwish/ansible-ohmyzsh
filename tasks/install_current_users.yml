@@ -29,7 +29,6 @@
     name: "{{ item.users }}"
     shell: /usr/bin/zsh
   with_items:
-      - { users: root }
       - { users: vagrant }
       - { users: ubuntu }
   register: ohmyzsh_default
