@@ -1,43 +1,52 @@
 ---
 
-# - name: install or upgrade oh-my-zsh
-#   shell: curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
-#   args:
-#     warn: false
-#   when:  zsh_installed is succeeded or not ohmyzsh_template_copied is success
-#   register: ohmyzsh_installed
-#   tags: oh-my-zsh
-
 - name: Installing oh-my-zsh per user
   git:
     repo: https://github.com/robbyrussell/oh-my-zsh.git
-    dest: "/home/{{ item.username }}/.oh-my-zsh"
-    update: "{{ users_oh_my_zsh_update }}"
-  with_items: "{{ users }}"
+    dest: "/home/{{ item.users }}/.oh-my-zsh"
+  with_items:
+      - { users: root }
+      - { users: vagrant }
+      - { users: ubuntu }
+  register: ohmyzsh_installed
+  tags: oh-my-zsh
 
 - name: Setting permissions per user
   file:
-    path: "/home/{{ item.username }}/.oh-my-zsh"
-    owner: "{{ item.username }}"
-    group: "{{ item.group if item.group is defined else (users_group if users_group else item.username) }}"
+    path: "/home/{{ item.users }}/.oh-my-zsh"
+    owner:  "{{ item.users }}"
     recurse: yes
-  with_items: "{{ users }}"
+  with_items:
+      - { users: root }
+      - { users: vagrant }
+      - { users: ubuntu }
+  register: ohmyzsh_permissions
+  when: ohmyzsh_installed is success
+  tags: oh-my-zsh
 
 - name: Setting default shell per user
   user:
-    name: "{{ item.username }}"
-    shell: /bin/zsh
-  with_items: "{{ users }}"
+    name: "{{ item.users }}"
+    shell: /usr/bin/zsh
+  with_items:
+      - { users: root }
+      - { users: vagrant }
+      - { users: ubuntu }
+  register: ohmyzsh_default
+  when: ohmyzsh_permissions is success
+  tags: oh-my-zsh
 
 - name: load custom config zsh on existing users
   template:
     src: zshrc.j2
-    dest: /home/{{ item.username }}/.zshrc
-    owner: "{{ item.username }}"
-    group: "{{ item.group if item.group is defined else (users_group if users_group else item.username) }}"
+    dest: /home/{{ item.users }}/.zshrc
+    owner: "{{ item.users }}"
     backup: yes
     mode: "0644"
-  with_items: "{{ users }}"
+  with_items:
+      - { users: root }
+      - { users: vagrant }
+      - { users: ubuntu }
   register: ohmyzsh_template_copied
-  #when: ohmyzsh_installed is success
+  when: ohmyzsh_default is success
   tags: oh-my-zsh

@@ -3,8 +3,8 @@
 - include: check_requirements.yml
   tags: check_requirements
 
-# - include: install_current_users.yml
-#   tags: install_current_users
+- include: install_current_users.yml
+  tags: install_current_users
 
 - include: install_new_users.yml
   tags: install_new_users
