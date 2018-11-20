@@ -26,6 +26,7 @@
       - { users: ubuntu }
   register: ohmyzsh_installed
   tags: oh-my-zsh-installed
+  ignore_errors: true
 
 - name: Setting permissions per user
   file:
@@ -38,6 +39,7 @@
   register: ohmyzsh_permissions
   when: ohmyzsh_installed is success
   tags: oh-my-zsh-permissions
+  ignore_errors: true
 
 - name: Setting default shell per user
   user:
@@ -49,6 +51,7 @@
   register: ohmyzsh_default
   when: ohmyzsh_permissions is success
   tags: oh-my-zsh-defaults
+  ignore_errors: true
 
 - name: load custom config zsh on existing users
   template:
@@ -63,3 +66,5 @@
   register: ohmyzsh_template_copied
   when: ohmyzsh_default is success
   tags: oh-my-zsh-config
+  ignore_errors: true
+  
