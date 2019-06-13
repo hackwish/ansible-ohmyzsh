@@ -1,10 +1,17 @@
 ---
 #Root or default user
-- name: install or upgrade oh-my-zsh
+- name: check if oh-my-zsh exists
+  stat: 
+    path: $HOME/.oh-my-zsh
+  register: ohmyzsh_exists
+
+- name: install oh-my-zsh
   shell: curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
   args:
     warn: false
-  when:  zsh_installed is succeeded or not ohmyzsh_template_copied is success
+  when:  
+    - zsh_installed is succeeded or not ohmyzsh_template_copied is success
+    - ohmyzsh_exists.stat.exists == False
   register: ohmyzsh_current_installed
   tags: oh-my-zsh
 
