@@ -17,4 +17,4 @@
 *.log
 .sync-*
 ansible_server_key
-
+*sync-conflict*

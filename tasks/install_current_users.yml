@@ -25,7 +25,7 @@
 
 #Per existing user
 - name : list users to apply oh-my-zsh
-  shell: "getent passwd | awk -F: '$3 > 1000 {print $1}'"
+  shell: "getent passwd | awk -F: '$3 > 999 {print $1}'"
   register: users
 
 - name: Installing oh-my-zsh per user
@@ -52,6 +52,7 @@
   user:
     name: "{{ item }}"
     shell: /usr/bin/zsh
+    state: present
   with_items: users.stdout_lines
   register: ohmyzsh_default
   when: ohmyzsh_permissions is success
