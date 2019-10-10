@@ -53,7 +53,7 @@
     name: "{{ item }}"
     shell: /usr/bin/zsh
     state: present
-  with_items: "{{ users.stdout_lines }}"s
+  with_items: "{{ users.stdout_lines }}"
   register: ohmyzsh_default
   when: ohmyzsh_permissions is success
   tags: oh-my-zsh-defaults
