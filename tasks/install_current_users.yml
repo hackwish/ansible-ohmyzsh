@@ -32,7 +32,7 @@
   git:
     repo: https://github.com/robbyrussell/oh-my-zsh.git
     dest: "/home/{{ item }}/.oh-my-zsh"
-  with_items: users.stdout_lines
+  with_items: "{{ users.stdout_lines }}"
   register: ohmyzsh_installed
   tags: oh-my-zsh-installed
   ignore_errors: true
@@ -42,7 +42,7 @@
     path: "/home/{{ item }}/.oh-my-zsh"
     owner:  "{{ item }}"
     recurse: yes
-  with_items: users.stdout_lines
+  with_items: "{{ users.stdout_lines }}"
   register: ohmyzsh_permissions
   when: ohmyzsh_installed is success
   tags: oh-my-zsh-permissions
@@ -53,7 +53,7 @@
     name: "{{ item }}"
     shell: /usr/bin/zsh
     state: present
-  with_items: users.stdout_lines
+  with_items: "{{ users.stdout_lines }}"s
   register: ohmyzsh_default
   when: ohmyzsh_permissions is success
   tags: oh-my-zsh-defaults
@@ -66,7 +66,7 @@
     owner: "{{ item }}"
     backup: yes
     mode: "0644"
-  with_items: users.stdout_lines
+  with_items: "{{ users.stdout_lines }}"
   register: ohmyzsh_template_copied
   when: ohmyzsh_default is success
   tags: oh-my-zsh-config
