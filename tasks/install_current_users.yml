@@ -25,13 +25,17 @@
 
 #Per existing user
 - name : list users to apply oh-my-zsh
-  shell: "users=$( getent passwd {1000..60000} | awk -F: '$3 {print $1}' )"
+  shell: "getent passwd {1000..60000} | awk -F: '$3 {print $1}'"
   register: users
 
+- debug:
+  var: users
+  verbosity: 2
+    
 - name: Installing oh-my-zsh per user
   git:
     repo: https://github.com/robbyrussell/oh-my-zsh.git
-    dest: "/home/{{ item.users }}/.oh-my-zsh"
+    dest: "/home/{{ item }}/.oh-my-zsh"
   with_items: "{{ users.stdout_lines }}"
   register: ohmyzsh_installed
   tags: oh-my-zsh-installed
@@ -39,8 +43,8 @@
 
 - name: Setting permissions per user
   file:
-    path: "/home/{{ item.users }}/.oh-my-zsh"
-    owner:  "{{ item.users }}"
+    path: "/home/{{ item }}/.oh-my-zsh"
+    owner:  "{{ item }}"
     recurse: yes
   with_items: "{{ users.stdout_lines }}"
   register: ohmyzsh_permissions
@@ -50,7 +54,7 @@
 
 - name: Setting default shell per user
   user:
-    name: "{{ item.users }}"
+    name: "{{ item }}"
     shell: /usr/bin/zsh
     state: present
   with_items: "{{ users.stdout_lines }}"
@@ -62,8 +66,8 @@
 - name: load custom config zsh on existing users
   template:
     src: zshrc.j2
-    dest: /home/{{ item.users }}/.zshrc
-    owner: "{{ item.users }}"
+    dest: /home/{{ item }}/.zshrc
+    owner: "{{ item }}"
     backup: yes
     mode: "0644"
   with_items: "{{ users.stdout_lines }}"
