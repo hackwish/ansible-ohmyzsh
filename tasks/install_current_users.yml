@@ -25,12 +25,12 @@
 
 #Per existing user
 - name : list users to apply oh-my-zsh
-  shell: "getent passwd {1000..60000} | awk -F: '$3 {print $1}'0"
+  shell: "getent passwd {1000..60000} | awk -F: '$3 {print $1}'"
   register: users
 
 - debug:
-  var: users
-  verbosity: 2
+    var: users
+    verbosity: 2
     
 - name: Installing oh-my-zsh per user
   git:
