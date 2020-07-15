@@ -8,7 +8,26 @@
   tags: oh-my-zsh
 
 - name: install or upgrade zsh
-  apt: pkg=zsh,git state=latest
-  when: not check_zsh_installed is success
+  apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - git
+    - zsh
+    
+  when: not check_zsh_installed is success and ansible_os_family == "Debian" or ansible_os_family == "Ubuntu"
+  tags: zsh-install
+  register: zsh_installed
+
+- name: install or upgrade zsh
+  yum: 
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - git
+    - zsh
+  when: not check_zsh_installed is success and ansible_os_family == "RedHat"
   register: zsh_installed
   tags: zsh-install

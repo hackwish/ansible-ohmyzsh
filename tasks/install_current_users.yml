@@ -1,10 +1,17 @@
 ---
 #Root or default user
-- name: install or upgrade oh-my-zsh
+- name: check if oh-my-zsh exists
+  stat: 
+    path: $HOME/.oh-my-zsh
+  register: ohmyzsh_exists
+
+- name: install oh-my-zsh
   shell: curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
   args:
     warn: false
-  when:  zsh_installed is succeeded or not ohmyzsh_template_copied is success
+  when:  
+    - zsh_installed is succeeded or not ohmyzsh_template_copied is success
+    - ohmyzsh_exists.stat.exists == False
   register: ohmyzsh_current_installed
   tags: oh-my-zsh
 
@@ -17,25 +24,25 @@
   tags: ohmyzsh_current_template
 
 #Per existing user
+- name : list users to apply oh-my-zsh
+  shell: "users=$( getent passwd {1000..60000} | awk -F: '$3 {print $1}' )"
+  register: users
+
 - name: Installing oh-my-zsh per user
   git:
     repo: https://github.com/robbyrussell/oh-my-zsh.git
-    dest: "/home/{{ item.users }}/.oh-my-zsh"
-  with_items:
-      - { users: vagrant }
-      - { users: ubuntu }
+    dest: "/home/{{ item }}/.oh-my-zsh"
+  with_items: "{{ users.stdout_lines }}"
   register: ohmyzsh_installed
   tags: oh-my-zsh-installed
   ignore_errors: true
 
 - name: Setting permissions per user
   file:
-    path: "/home/{{ item.users }}/.oh-my-zsh"
-    owner:  "{{ item.users }}"
+    path: "/home/{{ item }}/.oh-my-zsh"
+    owner:  "{{ item }}"
     recurse: yes
-  with_items:
-      - { users: vagrant }
-      - { users: ubuntu }
+  with_items: "{{ users.stdout_lines }}"
   register: ohmyzsh_permissions
   when: ohmyzsh_installed is success
   tags: oh-my-zsh-permissions
@@ -43,11 +50,10 @@
 
 - name: Setting default shell per user
   user:
-    name: "{{ item.users }}"
+    name: "{{ item }}"
     shell: /usr/bin/zsh
-  with_items:
-      - { users: vagrant }
-      - { users: ubuntu }
+    state: present
+  with_items: "{{ users.stdout_lines }}"
   register: ohmyzsh_default
   when: ohmyzsh_permissions is success
   tags: oh-my-zsh-defaults
@@ -56,13 +62,11 @@
 - name: load custom config zsh on existing users
   template:
     src: zshrc.j2
-    dest: /home/{{ item.users }}/.zshrc
-    owner: "{{ item.users }}"
+    dest: /home/{{ item }}/.zshrc
+    owner: "{{ item }}"
     backup: yes
     mode: "0644"
-  with_items:
-      - { users: vagrant }
-      - { users: ubuntu }
+  with_items: "{{ users.stdout_lines }}"
   register: ohmyzsh_template_copied
   when: ohmyzsh_default is success
   tags: oh-my-zsh-config
