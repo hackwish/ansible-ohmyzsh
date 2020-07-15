@@ -30,6 +30,13 @@
   poll: 3
   register: users
 
+- name: 'check on async task'
+  async_status:
+    jid: "{{ users.ansible_job_id }}"
+  register: job_result
+  until: job_result.finished
+  retries: 30
+
 - debug:
     var: users
     verbosity: 2
