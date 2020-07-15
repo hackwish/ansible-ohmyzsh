@@ -25,7 +25,9 @@
 
 #Per existing user
 - name : list users to apply oh-my-zsh
-  shell: "set timeout 300 && getent passwd {1000..60000} | awk -F: '$3 {print $1}'"
+  shell: "getent passwd {1000..60000} | awk -F: '$3 {print $1}'"
+  async: 30
+  poll: 3
   register: users
 
 - debug:
