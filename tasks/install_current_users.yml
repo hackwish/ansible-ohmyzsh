@@ -26,21 +26,21 @@
 #Per existing user
 - name : list users to apply oh-my-zsh
   shell: |
-    getent passwd {1000..60000} | awk -F: '$3 {print $1}'
-  async: 30
-  poll: 0
+    getent passwd {1000..9999} | awk -F: '$3 {print $1}'
+  # async: 30
+  # poll: 0
   register: users
 
 - debug:
     var: users
     verbosity: 2
 
-- name: 'check on async task'
-  async_status:
-    jid: "{{ users.ansible_job_id }}"
-  register: job_result
-  until: job_result.finished
-  retries: 30
+# - name: 'check on async task'
+#   async_status:
+#     jid: "{{ users.ansible_job_id }}"
+#   register: job_result
+#   until: job_result.finished
+#   retries: 30
     
 - name: Installing oh-my-zsh per user
   git:
