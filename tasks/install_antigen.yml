@@ -7,7 +7,7 @@
 
 - name: Clone Antigen
   git:
-    repo: https://github.com/zsh-users/zsh-autosuggestions.git
+    repo: https://github.com/zsh-users/antigen.git
     dest: /opt/antigen
   when:  
     - zsh_installed is succeeded or not antigen_template_copied is success
