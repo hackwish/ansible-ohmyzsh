@@ -1,0 +1,60 @@
+---
+# tasks file for antigen
+- name: check if antigen exists
+  stat: 
+    path: /opt/antigen
+  register: antigen_exists
+
+- name: Clone Antigen
+  git:
+    repo: https://github.com/zsh-users/zsh-autosuggestions.git
+    dest: /opt/antigen
+  when:  
+    - zsh_installed is succeeded or not antigen_template_copied is success
+    - antigen_exists.stat.exists == False
+  register: antigen_current_installed
+  tags: antigen
+
+- name: load custom template
+  template:
+    src: antigenrc.j2
+    dest: $HOME/.antigenrc
+  register: antigen_template_copied
+  when: antigen_current_installed is success
+  tags: antigen_current_template
+
+#Per existing user
+- name : list users to apply antigen
+  shell: |
+    getent passwd | awk -F: '$3 > 999 {print $1}'
+  # async: 30
+  # poll: 0
+  register: users
+
+- debug:
+    var: users
+    verbosity: 2
+
+- name: load antigen config on existing users
+  template:
+    src: antigenrc.j2
+    dest: /home/{{ item }}/.antigenrc
+    owner: "{{ item }}"
+    backup: yes
+    mode: "0644"
+  with_items: "{{ users.stdout_lines }}"
+  register: antigen_template_user_copied
+  when: antigen_current_installed is success
+  tags: antigen_current_template
+  ignore_errors: true
+
+#For new users
+- name: load antigen config for new users
+  template:
+    src: antigenrc.j2
+    dest: /etc/skel/.antigenrc
+    backup: yes
+    mode: "0644"
+  register: antigenrc_template_new_user_copied
+  #when: ohmyzsh_installed is success
+  tags: antigen
