@@ -15,9 +15,9 @@
     - git
     - zsh
 
-#   when: not check_zsh_installed is success and ansible_os_family == "Debian" or ansible_os_family == "Ubuntu"
-#   tags: zsh-install
-#   register: zsh_installed
+  when: not check_zsh_installed is success
+  tags: zsh-install
+  register: zsh_installed
 
 # - name: install or upgrade zsh
 #   yum: 
