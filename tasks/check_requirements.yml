@@ -1,10 +1,10 @@
 
-# - name: determine if ZSH is installed
-#   command: which zsh
-#   register: check_zsh_installed
-#   ignore_errors: true
-#   changed_when: false
-#   tags: oh-my-zsh
+- name: determine if ZSH is installed
+  command: which zsh
+  register: check_zsh_installed
+  ignore_errors: true
+  changed_when: false
+  tags: oh-my-zsh
 
 - name: install or upgrade zsh
   package:
