@@ -1,33 +1,32 @@
----
 
-- name: determine if ZSH is installed
-  command: which zsh
-  register: check_zsh_installed
-  ignore_errors: true
-  changed_when: false
-  tags: oh-my-zsh
+# - name: determine if ZSH is installed
+#   command: which zsh
+#   register: check_zsh_installed
+#   ignore_errors: true
+#   changed_when: false
+#   tags: oh-my-zsh
 
 - name: install or upgrade zsh
-  apt:
+  package:
     name: "{{ packages }}"
-    state: latest
+    state: present
   vars:
     packages:
     - git
     - zsh
-    
-  when: not check_zsh_installed is success and ansible_os_family == "Debian" or ansible_os_family == "Ubuntu"
-  tags: zsh-install
-  register: zsh_installed
 
-- name: install or upgrade zsh
-  yum: 
-    name: "{{ packages }}"
-    state: latest
-  vars:
-    packages:
-    - git
-    - zsh
-  when: not check_zsh_installed is success and ansible_os_family == "RedHat"
-  register: zsh_installed
-  tags: zsh-install
+#   when: not check_zsh_installed is success and ansible_os_family == "Debian" or ansible_os_family == "Ubuntu"
+#   tags: zsh-install
+#   register: zsh_installed
+
+# - name: install or upgrade zsh
+#   yum: 
+#     name: "{{ packages }}"
+#     state: latest
+#   vars:
+#     packages:
+#     - git
+#     - zsh
+#   when: not check_zsh_installed is success and ansible_os_family == "RedHat"
+#   register: zsh_installed
+#   tags: zsh-install
