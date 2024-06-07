@@ -25,6 +25,7 @@
   git:
     repo: https://github.com/robbyrussell/oh-my-zsh.git
     dest: "/etc/skel/.oh-my-zsh"
+  ignore_errors: true
 
 - name: load custom config zsh for new users
   template:
