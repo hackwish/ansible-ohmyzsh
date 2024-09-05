@@ -63,7 +63,7 @@
 - name: Setting default shell per user
   user:
     name: "{{ item }}"
-    ansible.builtin.shell: /usr/bin/zsh
+    shell: /usr/bin/zsh
     state: present
   with_items: "{{ users.stdout_lines }}"
   register: ohmyzsh_default
