@@ -1,13 +1,13 @@
 ---
 
-- include: check_requirements.yml
+- include_tasks: check_requirements.yml
   tags: check_requirements
 
-- include: install_current_users.yml
+- include_tasks: install_current_users.yml
   tags: install_current_users
 
-- include: install_new_users.yml
+- include_tasks: install_new_users.yml
   tags: install_new_users
 
-- include: install_antigen.yml
+- include_tasks: install_antigen.yml
   tags: install_antigen
