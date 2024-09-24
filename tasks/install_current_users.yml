@@ -6,7 +6,7 @@
   register: ohmyzsh_exists
 
 - name: install oh-my-zsh
-  ansible.builtin.shell: curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
+  shell: curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
   when:  
     - zsh_installed is succeeded or not ohmyzsh_template_copied is success
     - ohmyzsh_exists.stat.exists == False
@@ -23,7 +23,7 @@
 
 #Per existing user
 - name : list users to apply oh-my-zsh
-  ansible.builtin.shell: |
+  shell: |
     getent passwd | awk -F: '$3 > 999 {print $1}'
   # async: 30
   # poll: 0
